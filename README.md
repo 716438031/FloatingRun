@@ -5,7 +5,7 @@
   使用场景:
   玩某游戏的时候,经常需要重启游戏,所以打算使用am指令来进行重启...  
   命令:  
-  `am start -S com.huanmeng.zhanjian2/org.cocos2dx.cpp.AppActivity`
+  `am start -S com.huanmeng.zhanjian2/org.cocos2dx.cpp.AppActivity`  
   然而需要root...
   
 借物表/参考项目:
