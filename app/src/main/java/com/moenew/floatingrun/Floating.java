@@ -1,6 +1,8 @@
 package com.moenew.floatingrun;
 
 import com.moenew.floatingrun.ShellUtils.CommandResult;
+
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +21,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class Serivces extends Service {
+public class Floating extends Service {
 
     private boolean waitDouble = true;
     private static final int DOUBLE_CLICK_TIME = 300;// 设定双击延迟
@@ -31,32 +33,41 @@ public class Serivces extends Service {
     WindowManager mWindowManager;
     Button mFloatView;
     String string;
-    boolean root, out, doubleclick, move;
+    boolean use_root, info, double_click, move_mode;
     int x, y;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
-        // 从文件读取设定内容,不知道怎么传参好麻烦啊
-        string = pref.getString("cmd", "");
-        root = pref.getBoolean("root", false);
-        out = pref.getBoolean("out", false);
-        doubleclick = pref.getBoolean("doubleclick", false);
-        move = pref.getBoolean("move", false);
-        x = pref.getInt("x", 0);
-        y = pref.getInt("y", 0);
-
-        createFloatView();// 创建悬浮窗
-
+        createFloatView();
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        stop();
+        createFloatView();// 创建悬浮窗
+        return super.onStartCommand(intent, flags, startId);
+    }
+
 
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
 
+    @SuppressLint({"ClickableViewAccessibility", "InflateParams"})
+    //屏蔽报错
     private void createFloatView() {// 创建悬浮窗
+        SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
+        // 从文件读取设定内容
+        string = pref.getString("cmd", "");
+        use_root = pref.getBoolean("use_root", false);
+        info = pref.getBoolean("info", false);
+        double_click = pref.getBoolean("double_click", false);
+        move_mode = pref.getBoolean("move_mode", false);
+        x = pref.getInt("x", 0);
+        y = pref.getInt("y", 0);
+
         wmParams = new WindowManager.LayoutParams();
         getApplication();
         // 获取WindowManagerImpl.CompatModeWrapper
@@ -74,34 +85,35 @@ public class Serivces extends Service {
         // 以屏幕左上角为原点，设置x、y初始值
         wmParams.x = x;
         wmParams.y = y;
-
         // 设置悬浮窗口长宽数据
         wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         LayoutInflater inflater = LayoutInflater.from(getApplication());
         // 获取浮动窗口视图所在布局
-        mFloatLayout = (LinearLayout) inflater.inflate(R.layout.serivces,null);
+        mFloatLayout = (LinearLayout) inflater.inflate(R.layout.floating, null);
         // 添加mFloatLayout
         mWindowManager.addView(mFloatLayout, wmParams);// 设定悬浮窗位置
         // 浮动窗口按钮
-        mFloatView = (Button) mFloatLayout.findViewById(R.id.float_id);
-        mFloatLayout.measure(View.MeasureSpec.makeMeasureSpec(0,
-                View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
-                .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        mFloatView = mFloatLayout.findViewById(R.id.button);
+        mFloatLayout.measure(
+                View.MeasureSpec.makeMeasureSpec(
+                        0,
+                        View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(
+                        0,
+                        View.MeasureSpec.UNSPECIFIED)
+        );
 
         // 设置监听浮动窗口的触摸移动
         mFloatView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
-                wmParams.x = (int) event.getRawX()
-                        - mFloatView.getMeasuredWidth() / 2;
-                // 25为状态栏的高度
-                wmParams.y = (int) event.getRawY()
-                        - mFloatView.getMeasuredHeight() / 2 - 25;
-                // 刷新
-                if (move) {
+                if (move_mode) {
+                    // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
+                    wmParams.x = (int) event.getRawX() - mFloatView.getMeasuredWidth() / 2;
+                    wmParams.y = (int) event.getRawY() - mFloatView.getMeasuredHeight();
                     mWindowManager.updateViewLayout(mFloatLayout, wmParams);
+                    // 刷新
                 }
                 return false;
             }
@@ -111,15 +123,15 @@ public class Serivces extends Service {
         mFloatView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (doubleclick) {// 判断双击执行,好复杂的逻辑,我已经看不懂了
-                    if (waitDouble == true) {
+                if (double_click) {// 判断双击执行,好复杂的逻辑,我已经看不懂了
+                    if (waitDouble) {
                         waitDouble = false;
                         Thread thread = new Thread() {
                             @Override
                             public void run() {
                                 try {
                                     sleep(DOUBLE_CLICK_TIME);
-                                    if (waitDouble == false) {
+                                    if (!waitDouble) {
                                         waitDouble = true;
                                     }
                                 } catch (InterruptedException e) {
@@ -143,34 +155,39 @@ public class Serivces extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // 保存悬浮窗位置
-        SharedPreferences.Editor editor = getSharedPreferences("data",
-                MODE_PRIVATE).edit();
-        editor.putInt("x", wmParams.x);
-        editor.putInt("y", wmParams.y);
-        editor.apply();
-
-        if (mFloatLayout != null) {
-            mWindowManager.removeView(mFloatLayout);
-        }
+        stop();
     }
 
-    private void run() {// 执行命令
-        String[] commands = new String[] { string };
-        CommandResult result = ShellUtils.execCommand(commands, root);
-        if (out) {// 是否输出执行返回内容
-            if (!result.successMsg.equals("")) {// 成功的提示
-                Toast.makeText(Serivces.this, result.successMsg, Toast.LENGTH_SHORT).show();
+    private void run() {
+        // 执行命令
+        String[] commands = new String[]{string};
+        CommandResult result = ShellUtils.execCommand(commands, use_root);
+        if (info) {
+            // 是否输出执行返回内容
+            if (!result.successMsg.equals("")) {
+                // 成功的提示
+                Toast.makeText(Floating.this, result.successMsg, Toast.LENGTH_SHORT).show();
 
             }
-            if (!result.errorMsg.equals("")) {// 错误的提示
-                Toast.makeText(Serivces.this, result.errorMsg, Toast.LENGTH_SHORT).show();
+            if (!result.errorMsg.equals("")) {
+                // 错误的提示
+                Toast.makeText(Floating.this, result.errorMsg, Toast.LENGTH_SHORT).show();
 
             }
             if (result.successMsg.equals("") && result.errorMsg.equals("")) {
                 // 返回值为空的提示
-                Toast.makeText(Serivces.this, "没有返回值", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Floating.this, "没有返回值", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void stop() {
+        //保存当前坐标位置
+        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+        editor.putInt("x", wmParams.x);
+        editor.putInt("y", wmParams.y);
+        editor.apply();
+
+        mWindowManager.removeView(mFloatLayout);
     }
 }

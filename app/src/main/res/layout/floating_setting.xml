@@ -12,13 +12,13 @@
         android:src="@drawable/ic_launcher" />
 
     <TextView
-        android:id="@+id/setting_out"
+        android:id="@+id/textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/setting_out" />
 
     <EditText
-        android:id="@+id/cmd_in"
+        android:id="@+id/cmd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit"
@@ -30,14 +30,14 @@
         android:orientation="horizontal" >
 
         <CheckBox
-            android:id="@+id/root"
+            android:id="@+id/use_root"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/isroot" />
 
         <CheckBox
-            android:id="@+id/out"
+            android:id="@+id/info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -50,14 +50,14 @@
         android:orientation="horizontal" >
 
         <CheckBox
-            android:id="@+id/move"
+            android:id="@+id/move_mode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/move" />
 
         <CheckBox
-            android:id="@+id/doubleclick"
+            android:id="@+id/double_click"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

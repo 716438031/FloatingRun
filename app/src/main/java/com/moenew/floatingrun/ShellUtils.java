@@ -6,24 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-/**
- * ShellUtils
- * <ul>
- * <strong>Check root</strong>
- * <li>{@link ShellUtils#checkRootPermission()}</li>
- * </ul>
- * <ul>
- * <strong>Execte command</strong>
- * <li>{@link ShellUtils#execCommand(String, boolean)}</li>
- * <li>{@link ShellUtils#execCommand(String, boolean, boolean)}</li>
- * <li>{@link ShellUtils#execCommand(List, boolean)}</li>
- * <li>{@link ShellUtils#execCommand(List, boolean, boolean)}</li>
- * <li>{@link ShellUtils#execCommand(String[], boolean)}</li>
- * <li>{@link ShellUtils#execCommand(String[], boolean, boolean)}</li>
- * </ul>
- *
- * @author <a href="http://www.trinea.cn" target="_blank">Trinea</a> 2013-5-16
- */
 public class ShellUtils {
 
     public static final String COMMAND_SU       = "su";
@@ -36,19 +18,19 @@ public class ShellUtils {
     }
 
     /**
-     * check whether has root permission
+     * check whether has use_root permission
      *
      * @return
      */
     public static boolean checkRootPermission() {
-        return execCommand("echo root", true, false).result == 0;
+        return execCommand("echo use_root", true, false).result == 0;
     }
 
     /**
      * execute shell command, default return result msg
      *
      * @param command command
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @return
      * @see ShellUtils#execCommand(String[], boolean, boolean)
      */
@@ -60,7 +42,7 @@ public class ShellUtils {
      * execute shell commands, default return result msg
      *
      * @param commands command list
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @return
      * @see ShellUtils#execCommand(String[], boolean, boolean)
      */
@@ -72,7 +54,7 @@ public class ShellUtils {
      * execute shell commands, default return result msg
      *
      * @param commands command array
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @return
      * @see ShellUtils#execCommand(String[], boolean, boolean)
      */
@@ -84,7 +66,7 @@ public class ShellUtils {
      * execute shell command
      *
      * @param command command
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @param isNeedResultMsg whether need result msg
      * @return
      * @see ShellUtils#execCommand(String[], boolean, boolean)
@@ -97,7 +79,7 @@ public class ShellUtils {
      * execute shell commands
      *
      * @param commands command list
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @param isNeedResultMsg whether need result msg
      * @return
      * @see ShellUtils#execCommand(String[], boolean, boolean)
@@ -110,7 +92,7 @@ public class ShellUtils {
      * execute shell commands
      *
      * @param commands command array
-     * @param isRoot whether need to run with root
+     * @param isRoot whether need to run with use_root
      * @param isNeedResultMsg whether need result msg
      * @return <ul>
      *         <li>if isNeedResultMsg is false, {@link CommandResult#successMsg} is null and
