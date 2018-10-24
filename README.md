@@ -12,10 +12,10 @@
   
 参考项目:
 
-悬浮窗：http://blog.csdn.net/stevenhu_223/article/details/8504058#comments
+悬浮窗：[android悬浮窗口的实现](http://blog.csdn.net/stevenhu_223/article/details/8504058)
 
-双击事件：http://elingwange.iteye.com/blog/1613177
+双击事件：[android：实现双击事件（DoubleClick）](http://elingwange.iteye.com/blog/1613177)
 
-shell 命令执行：https://github.com/Trinea/android-common
+shell 命令执行：[android-common](https://github.com/Trinea/android-common)
 
-图标：(Bison仓鼠)[https://weibo.com/bisonbison]的表情包
+图标：[Bison仓鼠](https://weibo.com/bisonbison) 的表情包
