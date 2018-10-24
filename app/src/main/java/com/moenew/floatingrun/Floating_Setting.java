@@ -38,10 +38,12 @@ public class Floating_Setting extends Activity {
         String cmd = pref.getString("cmd", "");// 执行的命令
         Boolean use_root = pref.getBoolean("use_root", false);// 是否需要root
         Boolean info = pref.getBoolean("info", false);// 输出
-        Boolean move_mode =  pref.getBoolean("move_mode", false);// 移动
+        Boolean move_mode = pref.getBoolean("move_mode", false);// 移动
         Boolean double_click = pref.getBoolean("double_click", false);// 双击模式
 
-        String str = String.format(getResources().getString(R.string.textview),cmd,use_root,info,move_mode,double_click);
+        String str = String.format(
+                getResources().getString(R.string.textview),
+                cmd, use_root, info, move_mode, double_click);
 
         textView.setText(str);// 输出设定内容
         // 根据文件记录信息,设定状态
