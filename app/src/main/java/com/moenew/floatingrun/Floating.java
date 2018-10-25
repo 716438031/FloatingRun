@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,7 +23,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import static android.content.ContentValues.TAG;
+
 public class Floating extends Service {
+
 
     private boolean waitDouble = true;
     private static final int DOUBLE_CLICK_TIME = 300;// 设定双击延迟
@@ -58,6 +63,7 @@ public class Floating extends Service {
     @SuppressLint({"ClickableViewAccessibility", "InflateParams"})
     //屏蔽报错
     private void createFloatView() {// 创建悬浮窗
+
         SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
         // 从文件读取设定内容
         string = pref.getString("cmd", "");
@@ -69,12 +75,15 @@ public class Floating extends Service {
         y = pref.getInt("y", 0);
 
         wmParams = new WindowManager.LayoutParams();
-        getApplication();
-        // 获取WindowManagerImpl.CompatModeWrapper
-        mWindowManager = (WindowManager) getApplication().getSystemService(
-                Context.WINDOW_SERVICE);
-        // 设置window type
-        wmParams.type = LayoutParams.TYPE_PHONE;
+
+        mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= 26) {//8.0新特性
+            wmParams.type = LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }else{
+            wmParams.type = LayoutParams.TYPE_SYSTEM_ALERT;
+        }
+
         // 设置图片格式，效果为背景透明
         wmParams.format = PixelFormat.RGBA_8888;
         // 设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作）
@@ -106,24 +115,66 @@ public class Floating extends Service {
 
         // 设置监听浮动窗口的触摸移动
         mFloatView.setOnTouchListener(new OnTouchListener() {
+
+            float mInScreenX;
+            float mInScreenY;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (move_mode) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        //按下
+                        break;
+                    case MotionEvent.ACTION_MOVE://移动
+                        //获取移动到的坐标,减去控件本身的大小(纠偏)
+                        if (move_mode) {
+                            mInScreenX = event.getRawX() - mFloatView.getMeasuredWidth() / 2;
+                            mInScreenY = event.getRawY() - mFloatView.getMeasuredHeight();
+                            //获取坐标,每次移动都会更新
+
+                            wmParams.x = (int) (mInScreenX);
+                            wmParams.y = (int) (mInScreenY);
+                            //写入算好的坐标
+
+                            mWindowManager.updateViewLayout(mFloatLayout, wmParams);
+                            //设置悬浮窗位置
+                            mInScreenX = 0;
+                            mInScreenY = 0;
+                        }
+
+                        break;
+                    case MotionEvent.ACTION_UP://松开
+                        if (mInScreenX + mInScreenY != 0){
+                            Log.e(TAG, mInScreenX + mInScreenY + "");
+
+                        }else {
+                            //如果没有移动,则判断为点击
+                            run();
+                            Log.e(TAG,  "已执行");
+                        }
+
+                        break;
+                }
+
+                /*if (move_mode) {
                     // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
-                    wmParams.x = (int) event.getRawX() - mFloatView.getMeasuredWidth() / 2;
-                    wmParams.y = (int) event.getRawY() - mFloatView.getMeasuredHeight();
+                    // 触摸位置坐标 按钮坐标
+                    //wmParams.x = (int) event.getRawX() - mFloatView.getMeasuredWidth() / 2;
+                    //wmParams.y = (int) event.getRawY() - mFloatView.getMeasuredHeight();
+                    Log.e(TAG, event.getRawX()+"");
+                    Log.e(TAG, event.getX()+"");
                     mWindowManager.updateViewLayout(mFloatLayout, wmParams);
                     // 刷新
-                }
+                }*/
                 return false;
             }
         });
 
         // 点击事件
-        mFloatView.setOnClickListener(new OnClickListener() {
+        /*mFloatView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (double_click) {// 判断双击执行,好复杂的逻辑,我已经看不懂了
+                if (double_click) {// 判断双击执行
                     if (waitDouble) {
                         waitDouble = false;
                         Thread thread = new Thread() {
@@ -149,7 +200,7 @@ public class Floating extends Service {
                 }
 
             }
-        });
+        });*/
     }
 
     @Override

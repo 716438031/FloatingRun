@@ -5,7 +5,7 @@
 
 这是把原项目从 eclipse 迁移到 Android Studio 的新分支。
 
-支持 SDK 19（Android 4.4） - SDK 24 （Android 7.0）
+支持 SDK 19（Android 4.4） - SDK 27 （Android 8.1）
 
 
 ### 使用场景:
@@ -19,6 +19,7 @@
 ### 参考项目:
 
 悬浮窗：[android悬浮窗口的实现](http://blog.csdn.net/stevenhu_223/article/details/8504058)
+	[Android 8.0 悬浮窗变动与用法](https://blog.csdn.net/mai763727999/article/details/78983375)
 
 双击事件：[android：实现双击事件（DoubleClick）](http://elingwange.iteye.com/blog/1613177)
 

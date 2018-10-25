@@ -3,14 +3,18 @@ package com.moenew.floatingrun;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static android.content.ContentValues.TAG;
 
 public class Floating_Setting extends Activity {
 
@@ -76,13 +80,14 @@ public class Floating_Setting extends Activity {
     }
 
     private void run() {
-
         if (Build.VERSION.SDK_INT >= 23) {
-            if (Settings.canDrawOverlays(this)) {
-                startService(new Intent(this, Floating.class));
-            } else {
+            if(!Settings.canDrawOverlays(getApplicationContext())) {
+                //启动Activity让用户授权
                 Toast.makeText(this, "必须允许悬浮窗权限", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
+                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,Uri.parse("package:" + getPackageName())));
+            } else {
+                startService(new Intent(this, Floating.class));
+                //startActivity(new Intent(this, FloatWindow.class));
             }
         } else {
             startService(new Intent(this, Floating.class));
