@@ -3,11 +3,11 @@
     android:id="@+id/floatll"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/button"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@drawable/button"/>
+        android:background="@drawable/button" />
 </LinearLayout>

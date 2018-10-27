@@ -1,7 +1,5 @@
 package com.moenew.floatingrun;
 
-import com.moenew.floatingrun.ShellUtils.CommandResult;
-
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
@@ -27,10 +24,6 @@ import static android.content.ContentValues.TAG;
 
 public class Floating extends Service {
 
-
-    private boolean waitDouble = true;
-    private static final int DOUBLE_CLICK_TIME = 300;// 设定双击延迟
-
     // 定义浮动窗口布局
     LinearLayout mFloatLayout;
     WindowManager.LayoutParams wmParams;
@@ -38,7 +31,7 @@ public class Floating extends Service {
     WindowManager mWindowManager;
     Button mFloatView;
     String string;
-    boolean use_root, info, double_click, move_mode;
+    boolean use_root, info, move_mode;
     int x, y;
 
     @Override
@@ -69,7 +62,6 @@ public class Floating extends Service {
         string = pref.getString("cmd", "");
         use_root = pref.getBoolean("use_root", false);
         info = pref.getBoolean("info", false);
-        double_click = pref.getBoolean("double_click", false);
         move_mode = pref.getBoolean("move_mode", false);
         x = pref.getInt("x", 0);
         y = pref.getInt("y", 0);
@@ -80,7 +72,7 @@ public class Floating extends Service {
 
         if (Build.VERSION.SDK_INT >= 26) {//8.0新特性
             wmParams.type = LayoutParams.TYPE_APPLICATION_OVERLAY;
-        }else{
+        } else {
             wmParams.type = LayoutParams.TYPE_SYSTEM_ALERT;
         }
 
@@ -97,27 +89,20 @@ public class Floating extends Service {
         // 设置悬浮窗口长宽数据
         wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        LayoutInflater inflater = LayoutInflater.from(getApplication());
-        // 获取浮动窗口视图所在布局
-        mFloatLayout = (LinearLayout) inflater.inflate(R.layout.floating, null);
-        // 添加mFloatLayout
-        mWindowManager.addView(mFloatLayout, wmParams);// 设定悬浮窗位置
+        // 设定浮动窗口视图布局
+        mFloatLayout = (LinearLayout) LayoutInflater.from(getApplication()).inflate(R.layout.floating, null);
+        // 设定悬浮窗位置
+        mWindowManager.addView(mFloatLayout, wmParams);
         // 浮动窗口按钮
         mFloatView = mFloatLayout.findViewById(R.id.button);
-        mFloatLayout.measure(
-                View.MeasureSpec.makeMeasureSpec(
-                        0,
-                        View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(
-                        0,
-                        View.MeasureSpec.UNSPECIFIED)
-        );
 
         // 设置监听浮动窗口的触摸移动
         mFloatView.setOnTouchListener(new OnTouchListener() {
 
             float mInScreenX;
             float mInScreenY;
+
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -138,69 +123,29 @@ public class Floating extends Service {
 
                             mWindowManager.updateViewLayout(mFloatLayout, wmParams);
                             //设置悬浮窗位置
-                            mInScreenX = 0;
-                            mInScreenY = 0;
                         }
 
                         break;
                     case MotionEvent.ACTION_UP://松开
-                        if (mInScreenX + mInScreenY != 0){
-                            Log.e(TAG, mInScreenX + mInScreenY + "");
-
-                        }else {
+                        Log.e(TAG, event.getRawX() + "+" + event.getRawY());
+                        Log.e(TAG, event.getX() + "+" + event.getY());
+                        if (mInScreenX + mInScreenY != 0) {
+                            //Log.e(TAG, mInScreenX + mInScreenY + "");
+                            mInScreenX = 0;
+                            mInScreenY = 0;
+                        } else {
                             //如果没有移动,则判断为点击
                             run();
-                            Log.e(TAG,  "已执行");
+                            Log.e(TAG, "已执行");
                         }
 
                         break;
                 }
 
-                /*if (move_mode) {
-                    // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
-                    // 触摸位置坐标 按钮坐标
-                    //wmParams.x = (int) event.getRawX() - mFloatView.getMeasuredWidth() / 2;
-                    //wmParams.y = (int) event.getRawY() - mFloatView.getMeasuredHeight();
-                    Log.e(TAG, event.getRawX()+"");
-                    Log.e(TAG, event.getX()+"");
-                    mWindowManager.updateViewLayout(mFloatLayout, wmParams);
-                    // 刷新
-                }*/
                 return false;
             }
         });
 
-        // 点击事件
-        /*mFloatView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (double_click) {// 判断双击执行
-                    if (waitDouble) {
-                        waitDouble = false;
-                        Thread thread = new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    sleep(DOUBLE_CLICK_TIME);
-                                    if (!waitDouble) {
-                                        waitDouble = true;
-                                    }
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-                        thread.start();
-                    } else {
-                        waitDouble = true;
-                        run();
-                    }
-                } else {
-                    run();
-                }
-
-            }
-        });*/
     }
 
     @Override
@@ -212,7 +157,7 @@ public class Floating extends Service {
     private void run() {
         // 执行命令
         String[] commands = new String[]{string};
-        CommandResult result = ShellUtils.execCommand(commands, use_root);
+        ShellUtils.CommandResult result = ShellUtils.execCommand(commands, use_root);
         if (info) {
             // 是否输出执行返回内容
             if (!result.successMsg.equals("")) {
