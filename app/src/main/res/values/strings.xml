@@ -1,16 +1,17 @@
 <resources>
     <string name="app_name">悬浮窗执行</string>
     <string name="setting_out">读取配置文件失败!</string>
-    <string name="edit">在这里输入要执行的指令~注意,只能执行立刻返回结果的命令</string>
+    <string name="edit">只能执行立刻返回结果的命令</string>
     <string name="use_root">以root执行</string>
     <string name="info">接收返回消息</string>
     <string name="start">启动悬浮窗</string>
     <string name="remove">移除悬浮窗</string>
-    <string name="move">移动模式</string>
+    <string name="move">可移动模式</string>
     <string name="content">
         执行指令：  %1$s \n
         root执行： %2$b \n
         接收消息：  %3$b \n
         移动模式：  %4$b
     </string>
+    <string name="placeholder">"   "</string>
 </resources>

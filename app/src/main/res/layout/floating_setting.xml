@@ -15,7 +15,8 @@
         android:id="@+id/textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/setting_out" />
+        android:text="@string/setting_out"
+        android:textColor="#FBBD06"/>
 
     <EditText
         android:id="@+id/cmd"
@@ -28,49 +29,66 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <CheckBox
             android:id="@+id/move_mode"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/move" />
+            android:text="@string/move"
+            android:textColor="#4286F3"/>
+
+        <CheckBox
+            android:id="@+id/use_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/use_root"
+            android:textColor="#4286F3"/>
+
+        <CheckBox
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/info"
+            android:textColor="#4286F3"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
 
-        <CheckBox
-            android:id="@+id/use_root"
+
+
+        <Button
+            android:id="@+id/start"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/use_root" />
+            android:background="@drawable/b_0f0"
+            android:onClick="onClick"
+            android:text="@string/start"
+            android:textStyle="bold"
+            android:textColor="#4286F3" />
 
-        <CheckBox
-            android:id="@+id/info"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder" />
+
+        <Button
+            android:id="@+id/stop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/info" />
+            android:background="@drawable/b_f00"
+            android:onClick="onClick"
+            android:text="@string/remove"
+            android:textStyle="bold"
+            android:textColor="#4286F3" />
+
     </LinearLayout>
-
-    <Button
-        android:id="@+id/start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="@string/start" />
-
-    <Button
-        android:id="@+id/stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="@string/remove" />
 
 </LinearLayout>
